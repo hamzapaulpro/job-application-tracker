@@ -1,0 +1,23 @@
+# IntelliJ settings
+.idea/
+*.iml
+
+# Java build output
+target/
+*.class
+
+# React dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local environment variables and logs
+.env
+.env.*
+!.env.example
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
