@@ -45,6 +45,7 @@ with a React frontend and documented technical decisions.
 |--------|----------|-------------|
 | GET | /api/applications | List applications |
 | POST | /api/applications | Create an application |
+| GET | /api/applications/{id} | Get one application; returns 404 if not found |
 
 ### Example request
 

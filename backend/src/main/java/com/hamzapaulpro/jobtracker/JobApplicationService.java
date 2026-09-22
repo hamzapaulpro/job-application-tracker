@@ -16,6 +16,13 @@ public class JobApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public JobApplication findById(Long id) {
+        JobApplicationEntity entity = repository.findById(id).orElseThrow(() -> new ApplicationNotFoundException(id));
+
+        return toResponse(entity);
+    }
+
+    @Transactional(readOnly = true)
     public List<JobApplication> findAll() {
         return repository.findAll(Sort.by("id").ascending())
                 .stream()

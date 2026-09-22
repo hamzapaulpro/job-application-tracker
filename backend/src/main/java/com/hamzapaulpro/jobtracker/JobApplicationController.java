@@ -26,4 +26,9 @@ public class JobApplicationController {
     public JobApplication createApplication(@Valid @RequestBody CreateApplicationRequest request) {
         return service.create(request);
     }
+
+    @GetMapping("/{id}")
+    public JobApplication getApplication(@PathVariable Long id) {
+        return service.findById(id);
+    }
 }

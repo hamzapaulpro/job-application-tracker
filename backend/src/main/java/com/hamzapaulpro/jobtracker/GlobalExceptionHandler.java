@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
                 "VALIDATION_ERROR",
                 fieldErrors
         );
+    }
 
+    @ExceptionHandler(ApplicationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleApplicationNotFound(ApplicationNotFoundException exception) {
+        return new ApiErrorResponse("APPLICATION_NOT_FOUND", exception.getMessage());
     }
 }
