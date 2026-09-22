@@ -1,17 +1,29 @@
 package com.hamzapaulpro.jobtracker;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/applications")
 public class JobApplicationController {
 
-    @GetMapping("/api/applications")
+    private final JobApplicationService service;
+
+    public JobApplicationController(JobApplicationService service) {
+        this.service = service;
+    }
+
+    @GetMapping
     public List<JobApplication> getApplications() {
-        return List.of(
-                new JobApplication(1L, "Example company", "working student java developer", "APPLIED")
-        );
+        return service.findAll();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public JobApplication createApplication(@Valid @RequestBody CreateApplicationRequest request) {
+        return service.create(request);
     }
 }
