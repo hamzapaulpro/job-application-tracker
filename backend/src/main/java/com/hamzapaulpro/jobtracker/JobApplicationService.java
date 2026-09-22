@@ -1,30 +1,45 @@
 package com.hamzapaulpro.jobtracker;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class JobApplicationService {
 
-    private final List<JobApplication> applications = new CopyOnWriteArrayList<>();
-    private final AtomicLong nextId = new AtomicLong(1);
+    private final JobApplicationRepository repository;
 
-    public List<JobApplication> findAll() {
-        return List.copyOf(applications);
+    public JobApplicationService(JobApplicationRepository repository) {
+        this.repository = repository;
     }
 
+    @Transactional(readOnly = true)
+    public List<JobApplication> findAll() {
+        return repository.findAll(Sort.by("id").ascending())
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional
     public JobApplication create(CreateApplicationRequest request) {
-        JobApplication application = new JobApplication(
-                nextId.getAndIncrement(),
+        JobApplicationEntity entity = new JobApplicationEntity(
                 request.company(),
-                request.position(),
-                "APPLIED"
+                request.position()
         );
 
-        applications.add(application);
-        return application;
+        JobApplicationEntity saved = repository.save(entity);
+        return toResponse(saved);
+    }
+
+    private JobApplication toResponse(JobApplicationEntity entity) {
+        return new JobApplication(
+                entity.getId(),
+                entity.getCompany(),
+                entity.getPosition(),
+                entity.getStatus()
+        );
     }
 }

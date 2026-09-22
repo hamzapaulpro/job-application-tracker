@@ -6,8 +6,12 @@ and managing interviews and follow-ups.
 
 ## Project status
 
-The initial Spring Boot API is implemented. Applications are currently
-stored in memory and are cleared when the backend restarts.
+The Spring Boot API supports creating and listing applications,
+with PostgreSQL persistence, input validation, and structured errors.
+
+Database schema changes are managed with Flyway.
+Integration tests use a temporary PostgreSQL database through Testcontainers.
+GitHub Actions builds the backend and runs the tests on every push.
 
 ## Planned technologies
 
@@ -54,3 +58,23 @@ Content-Type: application/json
 
 Successful requests return HTTP 201.
 Invalid company or position values return HTTP 400 with field-specific errors.
+
+## Running locally
+
+Requirements: Java 21 and Docker with Docker Compose.
+
+1. Copy `.env.example` to `.env` and set `DB_PASSWORD`.
+2. From the repository root, run `docker compose up -d`.
+3. Open the backend in IntelliJ and load the Maven project.
+4. Set `DB_PASSWORD` in the backend run configuration to match `.env`.
+5. Run `BackendApplication`.
+
+The API is available at http://localhost:8080/api/applications.
+
+## Running tests
+
+Keep Docker running, then run from the repository root:
+
+```bash
+cd backend
+bash mvnw --batch-mode verify
