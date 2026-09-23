@@ -31,4 +31,9 @@ public class JobApplicationController {
     public JobApplication getApplication(@PathVariable Long id) {
         return service.findById(id);
     }
+
+    @PatchMapping("/{id}/status")
+    public JobApplication changeStatus(@PathVariable Long id, @Valid @RequestBody ChangeApplicationStatusRequest request) {
+        return service.changeStatus(id, request);
+    }
 }

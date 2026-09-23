@@ -16,8 +16,9 @@ public class JobApplicationEntity {
     @Column(nullable = false, length = 150)
     private String position;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String status;
+    private ApplicationStatus status;
 
     protected JobApplicationEntity() {
         // Required by JPA.
@@ -26,7 +27,7 @@ public class JobApplicationEntity {
     public JobApplicationEntity(String company, String position) {
         this.company = company;
         this.position = position;
-        this.status = "APPLIED";
+        this.status = ApplicationStatus.APPLIED;
     }
 
     public Long getId() {
@@ -41,7 +42,11 @@ public class JobApplicationEntity {
         return position;
     }
 
-    public String getStatus() {
+    public ApplicationStatus getStatus() {
         return status;
+    }
+
+    public void changeStatus(ApplicationStatus status) {
+        this.status = java.util.Objects.requireNonNull(status);
     }
 }

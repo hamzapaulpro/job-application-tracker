@@ -38,6 +38,10 @@ with a React frontend and documented technical decisions.
 - List applications
 - Validate company and position fields
 - Return field-specific validation errors
+- Change application status with timestamped history
+- Save status updates and history in one transaction
+- Prevent duplicate history when the status is unchanged
+- Verify transaction rollback with an automated failure test
 
 ## API endpoints
 
@@ -46,6 +50,7 @@ with a React frontend and documented technical decisions.
 | GET | /api/applications | List applications |
 | POST | /api/applications | Create an application |
 | GET | /api/applications/{id} | Get one application; returns 404 if not found |
+| PATCH | /api/applications/{id}/status | Change status and record history |
 
 ### Example request
 

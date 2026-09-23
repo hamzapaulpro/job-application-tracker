@@ -10,8 +10,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,6 +23,12 @@ public class JobApplicationApiTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private JobApplicationRepository applicationRepository;
+
+    @Autowired
+    private ApplicationStatusHistoryRepository historyRepository;
 
     @Test
     void createsApplicationAndIncludesItInList() throws Exception {
@@ -101,6 +107,45 @@ public class JobApplicationApiTests {
                 .andExpect(jsonPath("$.message").value(
                         "Application with ID " + Long.MAX_VALUE + " was not found"
                 ));
+    }
+
+    @Test
+    void changesStatusAndDoesNotDuplicateHistory() throws Exception {
+        JobApplicationEntity application = applicationRepository.saveAndFlush(
+                new JobApplicationEntity("History Example", "Java Developer")
+        );
+
+        Long id = application.getId();
+
+        mockMvc.perform(patch("/api/applications/{id}/status", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"status": "INTERVIEW"}
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("INTERVIEW"));
+
+        // Force pending changes to the database before checking history.
+        applicationRepository.flush();
+
+        var history = historyRepository.findByApplication_IdOrderByChangedAtAscIdAsc(id);
+
+        assertThat(history).hasSize(1);
+        assertThat(history.getFirst().getPreviousStatus()).isEqualTo(ApplicationStatus.APPLIED);
+        assertThat(history.getFirst().getNewStatus()).isEqualTo(ApplicationStatus.INTERVIEW);
+        assertThat(history.getFirst().getChangedAt()).isNotNull();
+
+        // Repeating the same request should not create another entry.
+        mockMvc.perform(patch("/api/applications/{id}/status", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"status": "INTERVIEW"}
+                            """))
+                .andExpect(status().isOk());
+
+        applicationRepository.flush();
+
+        assertThat(historyRepository.findByApplication_IdOrderByChangedAtAscIdAsc(id)).hasSize(1);
     }
 
 }
