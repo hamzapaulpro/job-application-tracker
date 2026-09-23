@@ -30,3 +30,7 @@ jobs:
 
       - name: Build and run tests
         run: bash mvnw --batch-mode --no-transfer-progress verify
+
+      - name: Build backend Docker image
+        working-directory: .
+        run: docker build --tag job-application-tracker-backend:ci ./backend

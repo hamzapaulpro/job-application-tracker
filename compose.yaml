@@ -14,6 +14,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  backend:
+    profiles: [ "app" ]
+    build:
+      context: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/jobtracker
+      DB_USERNAME: jobtracker
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
