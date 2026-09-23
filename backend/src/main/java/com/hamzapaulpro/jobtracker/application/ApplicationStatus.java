@@ -1,4 +1,4 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application;
 
 public enum ApplicationStatus {
     APPLIED,

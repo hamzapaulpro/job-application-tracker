@@ -1,4 +1,6 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application.history;
+
+import com.hamzapaulpro.jobtracker.application.ApplicationStatus;
 
 import java.time.Instant;
 

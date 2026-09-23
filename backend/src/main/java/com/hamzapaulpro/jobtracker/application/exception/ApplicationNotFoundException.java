@@ -1,4 +1,4 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application.exception;
 
 public class ApplicationNotFoundException extends RuntimeException {
     public ApplicationNotFoundException(Long id) {

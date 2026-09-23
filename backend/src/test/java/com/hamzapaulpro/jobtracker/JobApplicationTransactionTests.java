@@ -1,5 +1,12 @@
 package com.hamzapaulpro.jobtracker;
 
+import com.hamzapaulpro.jobtracker.application.ApplicationStatus;
+import com.hamzapaulpro.jobtracker.application.JobApplicationEntity;
+import com.hamzapaulpro.jobtracker.application.JobApplicationRepository;
+import com.hamzapaulpro.jobtracker.application.JobApplicationService;
+import com.hamzapaulpro.jobtracker.application.dto.ChangeApplicationStatusRequest;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryEntity;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

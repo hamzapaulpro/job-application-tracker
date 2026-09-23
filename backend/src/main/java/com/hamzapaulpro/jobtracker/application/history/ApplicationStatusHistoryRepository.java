@@ -1,4 +1,4 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application.history;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

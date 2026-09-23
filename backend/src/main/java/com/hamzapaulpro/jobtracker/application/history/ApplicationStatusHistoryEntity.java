@@ -1,5 +1,7 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application.history;
 
+import com.hamzapaulpro.jobtracker.application.ApplicationStatus;
+import com.hamzapaulpro.jobtracker.application.JobApplicationEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;

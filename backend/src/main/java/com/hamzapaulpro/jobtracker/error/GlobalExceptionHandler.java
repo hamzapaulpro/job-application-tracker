@@ -1,5 +1,6 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.error;
 
+import com.hamzapaulpro.jobtracker.application.exception.ApplicationNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

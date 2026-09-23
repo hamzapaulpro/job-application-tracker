@@ -1,5 +1,9 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application;
 
+import com.hamzapaulpro.jobtracker.application.dto.ChangeApplicationStatusRequest;
+import com.hamzapaulpro.jobtracker.application.dto.CreateApplicationRequest;
+import com.hamzapaulpro.jobtracker.application.dto.JobApplication;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.error;
 
 public record ApiErrorResponse(
         String code,

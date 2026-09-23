@@ -1,5 +1,12 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application;
 
+import com.hamzapaulpro.jobtracker.application.dto.ChangeApplicationStatusRequest;
+import com.hamzapaulpro.jobtracker.application.dto.CreateApplicationRequest;
+import com.hamzapaulpro.jobtracker.application.dto.JobApplication;
+import com.hamzapaulpro.jobtracker.application.exception.ApplicationNotFoundException;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryEntity;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryRepository;
+import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryResponse;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

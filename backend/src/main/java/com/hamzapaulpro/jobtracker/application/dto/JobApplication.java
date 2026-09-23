@@ -1,4 +1,6 @@
-package com.hamzapaulpro.jobtracker;
+package com.hamzapaulpro.jobtracker.application.dto;
+
+import com.hamzapaulpro.jobtracker.application.ApplicationStatus;
 
 public record JobApplication(
         Long id,
