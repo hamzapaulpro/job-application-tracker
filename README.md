@@ -51,6 +51,7 @@ with a React frontend and documented technical decisions.
 | POST | /api/applications | Create an application |
 | GET | /api/applications/{id} | Get one application; returns 404 if not found |
 | PATCH | /api/applications/{id}/status | Change status and record history |
+| GET | /api/applications/{id}/history | Get status history, oldest first |
 
 ### Example request
 

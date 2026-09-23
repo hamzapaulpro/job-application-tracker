@@ -77,4 +77,22 @@ public class JobApplicationService {
 
         return toResponse(application);
     }
+
+    @Transactional(readOnly = true)
+    public List<ApplicationStatusHistoryResponse> getHistory(Long applicationId) {
+        if (!repository.existsById(applicationId)) {
+            throw new ApplicationNotFoundException(applicationId);
+        }
+
+        return historyRepository
+                .findByApplication_IdOrderByChangedAtAscIdAsc(applicationId)
+                .stream()
+                .map(entry -> new ApplicationStatusHistoryResponse(
+                        entry.getId(),
+                        entry.getPreviousStatus(),
+                        entry.getNewStatus(),
+                        entry.getChangedAt()
+                ))
+                .toList();
+    }
 }

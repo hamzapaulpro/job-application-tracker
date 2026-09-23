@@ -148,4 +148,52 @@ public class JobApplicationApiTests {
         assertThat(historyRepository.findByApplication_IdOrderByChangedAtAscIdAsc(id)).hasSize(1);
     }
 
+    @Test
+    void returnsHistoryAfterStatusChange() throws Exception {
+        JobApplicationEntity application = applicationRepository.saveAndFlush(
+                new JobApplicationEntity("Timeline Example", "Java Developer")
+        );
+
+        Long id = application.getId();
+
+        mockMvc.perform(patch("/api/applications/{id}/status", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {"status": "INTERVIEW"}
+                            """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/applications/{id}/history", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").isNumber())
+                .andExpect(jsonPath("$[0].previousStatus").value("APPLIED"))
+                .andExpect(jsonPath("$[0].newStatus").value("INTERVIEW"))
+                .andExpect(jsonPath("$[0].changedAt").isNotEmpty());
+    }
+
+    @Test
+    void returnsEmptyHistoryForNewApplication() throws Exception {
+        JobApplicationEntity application = applicationRepository.saveAndFlush(
+                new JobApplicationEntity("New Example", "Java Developer")
+        );
+
+        mockMvc.perform(get(
+                        "/api/applications/{id}/history",
+                        application.getId()
+                ))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void returnsNotFoundForHistoryOfUnknownApplication() throws Exception {
+        mockMvc.perform(get(
+                        "/api/applications/{id}/history",
+                        Long.MAX_VALUE
+                ))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("APPLICATION_NOT_FOUND"));
+    }
+
 }

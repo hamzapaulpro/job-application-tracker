@@ -36,4 +36,9 @@ public class JobApplicationController {
     public JobApplication changeStatus(@PathVariable Long id, @Valid @RequestBody ChangeApplicationStatusRequest request) {
         return service.changeStatus(id, request);
     }
+
+    @GetMapping("/{id}/history")
+    public List<ApplicationStatusHistoryResponse> getHistory(@PathVariable Long id) {
+        return service.getHistory(id);
+    }
 }
