@@ -20,3 +20,10 @@ export interface ValidationErrorResponse {
         position?: string
     }
 }
+
+export interface ApplicationStatusHistory {
+    id: number
+    previousStatus: ApplicationStatus
+    newStatus: ApplicationStatus
+    changedAt: string
+}

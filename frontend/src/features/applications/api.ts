@@ -1,5 +1,4 @@
-import type { JobApplication } from './types'
-import type { ValidationErrorResponse } from './types'
+import type {ApplicationStatusHistory, JobApplication, ValidationErrorResponse} from './types'
 
 export class ApplicationValidationError extends Error {
     fieldErrors: ValidationErrorResponse['fieldErrors']
@@ -46,4 +45,34 @@ export async function getApplications(): Promise<JobApplication[]> {
     }
 
     return response.json()
+}
+
+export async function getApplication(id: string): Promise<JobApplication> {
+    const response = await fetch(
+        `/api/applications/${encodeURIComponent(id)}`,
+    )
+
+    if (response.status === 404) {
+        throw new Error('Application not found')
+    }
+
+    if (!response.ok) {
+        throw new Error('Could not load the application')
+    }
+
+    return response.json()
+}
+
+export async function getApplicationHistory(id: string): Promise<ApplicationStatusHistory[]> {
+    const response = await fetch(`/api/applications/${encodeURIComponent(id)}/history`)
+
+    if (response.status === 404) {
+        throw new Error("Application not found")
+    }
+
+    if (!response.ok) {
+        throw new Error('Could not load application history')
+    }
+
+    return response.json();
 }
