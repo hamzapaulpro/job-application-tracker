@@ -12,3 +12,11 @@ export interface JobApplication {
     position: string
     status: ApplicationStatus
 }
+
+export interface ValidationErrorResponse {
+    code: 'VALIDATION_ERROR'
+    fieldErrors: {
+        company?: string
+        position?: string
+    }
+}
