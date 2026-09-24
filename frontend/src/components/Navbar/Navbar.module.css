@@ -19,12 +19,12 @@
 }
 
 .navbar a:hover {
-    color: #1d4ed8;
+    color: var(--color-primary);
     text-decoration: underline;
 }
 
 .navbar a:focus-visible {
-    outline: 3px solid #1d4ed8;
+    outline: 3px solid var(--color-primary);
     outline-offset: 4px;
     border-radius: 4px;
 }

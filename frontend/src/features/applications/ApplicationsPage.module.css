@@ -13,7 +13,7 @@
 .addButton {
     margin-top: 20px;
     padding: 12px 20px;
-    background-color: #1d4ed8;
+    background-color: var(--color-primary);
     color: white;
     border: none;
     border-radius: 8px;
@@ -23,11 +23,11 @@
 }
 
 .addButton:hover {
-    background-color: #1e40af;
+    background-color: var(--color-primary-hover);
 }
 
 .addButton:focus-visible {
-    outline: 3px solid #1d4ed8;
+    outline: 3px solid var(--color-primary);
     outline-offset: 3px;
 }
 

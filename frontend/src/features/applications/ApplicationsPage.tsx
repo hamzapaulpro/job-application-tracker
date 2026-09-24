@@ -59,7 +59,7 @@ export default function ApplicationsPage() {
 
     return (
         <>
-            <header className={styles.pageHeader}>
+            <header id="applications" className={styles.pageHeader}>
                 <div>
                     <h1 className={styles.title}>Applications</h1>
                     <p className={styles.description}>
