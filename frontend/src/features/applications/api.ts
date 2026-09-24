@@ -37,3 +37,13 @@ export async function createApplication(
 
     return response.json()
 }
+
+export async function getApplications(): Promise<JobApplication[]> {
+    const response = await fetch('/api/applications')
+
+    if (!response.ok) {
+        throw new Error('Could not load applications')
+    }
+
+    return response.json()
+}

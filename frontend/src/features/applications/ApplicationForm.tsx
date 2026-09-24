@@ -3,24 +3,27 @@ import {useState} from "react";
 import type { SubmitEvent } from 'react'
 import { createApplication, ApplicationValidationError } from './api'
 import type { ValidationErrorResponse } from './types'
+import type { JobApplication } from './types'
 
-export default function ApplicationForm() {
+interface ApplicationFormProps {
+    onApplicationCreated: (application: JobApplication) => void
+}
+
+export default function ApplicationForm({onApplicationCreated}: ApplicationFormProps) {
     const [company, setCompany] = useState('')
     const [position, setPosition] = useState('')
     const [isSaving, setIsSaving] = useState(false)
-    const [successMessage, setSuccessMessage] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
     const [fieldErrors, setFieldErrors] = useState<ValidationErrorResponse['fieldErrors']>({})
 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault()
-        setSuccessMessage('')
         setIsSaving(true)
         setFieldErrors({})
 
         try {
             const application = await createApplication(company, position)
-            setSuccessMessage(`Application saved for ${application.company}!`)
+            onApplicationCreated(application)
 
             setCompany('')
             setPosition('')
@@ -80,12 +83,6 @@ export default function ApplicationForm() {
                     className={styles.submitButton}
                     disabled={isSaving}
             >{isSaving ? 'Saving…' : 'Save application'}</button>
-
-            {successMessage && (
-                <p className={styles.successMessage} role="status">
-                    {successMessage}
-                </p>
-            )}
 
             {errorMessage && (
                 <p className={styles.errorMessage} role="alert">

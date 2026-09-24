@@ -1,0 +1,28 @@
+.applicationCard {
+    border: 1px solid #dce3ee;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: white;
+
+    overflow-wrap: anywhere;
+}
+
+.applicationCard h3 {
+    margin: 0 0 8px;
+}
+
+.applicationCard p {
+    margin: 0 0 12px;
+    color: #526078;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #eaf0ff;
+    color: #1e40af;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
