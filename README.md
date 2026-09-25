@@ -73,6 +73,7 @@ Flyway manages versioned database changes. Application status updates and their 
 | GET | `/api/applications/{id}` | Retrieve one application |
 | PATCH | `/api/applications/{id}/status` | Change status and record history |
 | GET | `/api/applications/{id}/history` | Retrieve history, oldest first |
+| PUT | `/api/applications/{id}` | Update company and position without changing status |
 
 Endpoints targeting an individual application return `404 Not Found` if it does not exist.
 

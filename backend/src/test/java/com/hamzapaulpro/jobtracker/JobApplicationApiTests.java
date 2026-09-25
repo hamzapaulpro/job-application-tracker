@@ -200,4 +200,78 @@ public class JobApplicationApiTests {
                 .andExpect(jsonPath("$.code").value("APPLICATION_NOT_FOUND"));
     }
 
+    @Test
+    void updatesDetailsWithoutChangingStatus() throws Exception {
+        JobApplicationEntity application =
+                new JobApplicationEntity("Original Company", "Java Developer");
+
+        application.changeStatus(ApplicationStatus.INTERVIEW);
+        Long id = applicationRepository.saveAndFlush(application).getId();
+
+        mockMvc.perform(put("/api/applications/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "company": "Updated Company",
+                              "position": "Backend Developer"
+                            }
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.company").value("Updated Company"))
+                .andExpect(jsonPath("$.position").value("Backend Developer"))
+                .andExpect(jsonPath("$.status").value("INTERVIEW"));
+
+        applicationRepository.flush();
+
+        mockMvc.perform(get("/api/applications/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.company").value("Updated Company"))
+                .andExpect(jsonPath("$.position").value("Backend Developer"))
+                .andExpect(jsonPath("$.status").value("INTERVIEW"));
+
+        assertThat(
+                historyRepository.findByApplication_IdOrderByChangedAtAscIdAsc(id)
+        ).isEmpty();
+    }
+
+    @Test
+    void rejectsInvalidEditWithoutChangingDetails() throws Exception {
+        JobApplicationEntity application = applicationRepository.saveAndFlush(
+                new JobApplicationEntity("Original Company", "Java Developer")
+        );
+
+        Long id = application.getId();
+
+        mockMvc.perform(put("/api/applications/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "company": "   ",
+                              "position": "Backend Developer"
+                            }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.company")
+                        .value("Company is required"));
+
+        mockMvc.perform(get("/api/applications/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.company").value("Original Company"))
+                .andExpect(jsonPath("$.position").value("Java Developer"));
+    }
+
+    @Test
+    void returnsNotFoundWhenUpdatingUnknownApplication() throws Exception {
+        mockMvc.perform(put("/api/applications/{id}", Long.MAX_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "company": "Example Company",
+                              "position": "Java Developer"
+                            }
+                            """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("APPLICATION_NOT_FOUND"));
+    }
+
 }

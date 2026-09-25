@@ -49,4 +49,9 @@ public class JobApplicationEntity {
     public void changeStatus(ApplicationStatus status) {
         this.status = java.util.Objects.requireNonNull(status);
     }
+
+    public void updateDetails(String company, String position) {
+        this.company = company;
+        this.position = position;
+    }
 }

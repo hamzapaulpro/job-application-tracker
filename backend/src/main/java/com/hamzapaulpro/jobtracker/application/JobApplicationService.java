@@ -3,6 +3,7 @@ package com.hamzapaulpro.jobtracker.application;
 import com.hamzapaulpro.jobtracker.application.dto.ChangeApplicationStatusRequest;
 import com.hamzapaulpro.jobtracker.application.dto.CreateApplicationRequest;
 import com.hamzapaulpro.jobtracker.application.dto.JobApplication;
+import com.hamzapaulpro.jobtracker.application.dto.UpdateApplicationRequest;
 import com.hamzapaulpro.jobtracker.application.exception.ApplicationNotFoundException;
 import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryEntity;
 import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryRepository;
@@ -101,5 +102,16 @@ public class JobApplicationService {
                         entry.getChangedAt()
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public JobApplication updateDetails(Long id, UpdateApplicationRequest request) {
+        JobApplicationEntity application = repository.findByIdForUpdate(id)
+                .orElseThrow(() -> new ApplicationNotFoundException(id));
+
+        application.updateDetails(request.company(), request.position());
+        repository.save(application);
+
+        return toResponse(application);
     }
 }

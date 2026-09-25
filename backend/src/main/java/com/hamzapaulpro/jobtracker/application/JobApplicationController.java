@@ -3,6 +3,7 @@ package com.hamzapaulpro.jobtracker.application;
 import com.hamzapaulpro.jobtracker.application.dto.ChangeApplicationStatusRequest;
 import com.hamzapaulpro.jobtracker.application.dto.CreateApplicationRequest;
 import com.hamzapaulpro.jobtracker.application.dto.JobApplication;
+import com.hamzapaulpro.jobtracker.application.dto.UpdateApplicationRequest;
 import com.hamzapaulpro.jobtracker.application.history.ApplicationStatusHistoryResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -44,5 +45,10 @@ public class JobApplicationController {
     @GetMapping("/{id}/history")
     public List<ApplicationStatusHistoryResponse> getHistory(@PathVariable Long id) {
         return service.getHistory(id);
+    }
+
+    @PutMapping("/{id}")
+    public JobApplication updateDetails(@PathVariable Long id, @Valid @RequestBody UpdateApplicationRequest request) {
+        return service.updateDetails(id, request);
     }
 }
