@@ -1,6 +1,7 @@
 # Job Application Tracker
 
 [![Backend CI](https://github.com/hamzapaulpro/job-application-tracker/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/hamzapaulpro/job-application-tracker/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/hamzapaulpro/job-application-tracker/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/hamzapaulpro/job-application-tracker/actions/workflows/frontend-ci.yml)
 
 A web application for organizing job applications and tracking their progress.
 
