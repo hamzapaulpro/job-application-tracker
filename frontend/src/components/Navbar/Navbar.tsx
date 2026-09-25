@@ -1,5 +1,5 @@
 import styles from "./Navbar.module.css"
-import {Link} from "react-router";
+import {Link, NavLink} from "react-router";
 
 export default function Navbar() {
     return (
@@ -7,7 +7,14 @@ export default function Navbar() {
             <Link className={styles.brand} to="/applications">Job Tracker</Link>
 
             <div className={styles.navLinks}>
-                <Link to={"/applications"}>Applications</Link>
+                <NavLink
+                    to="/applications"
+                    className={({ isActive }) => (
+                        isActive ? styles.activeLink : undefined
+                    )}
+                >
+                    Applications
+                </NavLink>
                 <a href="#about">About</a>
             </div>
         </nav>

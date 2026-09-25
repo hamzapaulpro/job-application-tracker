@@ -41,3 +41,9 @@
         gap: 16px;
     }
 }
+
+.navLinks a.activeLink {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
