@@ -1,0 +1,63 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-block: 24px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-weight: 600;
+}
+
+.field input {
+    padding: 12px;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    font: inherit;
+}
+
+.field input:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.form .errorMessage {
+    margin: 0;
+    color: #b42318;
+}
+
+.field input[aria-invalid="true"] {
+    border-color: #b42318;
+}
+
+.saveButton {
+    align-self: flex-start;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-primary);
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.saveButton:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.saveButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.saveButton:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}

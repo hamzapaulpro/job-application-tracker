@@ -5,6 +5,7 @@ import { getApplication } from './api'
 import styles from './ApplicationDetailPage.module.css'
 import StatusHistory from './StatusHistory'
 import ApplicationStatusForm from './ApplicationStatusForm'
+import EditApplicationForm from './EditApplicationForm'
 
 export default function ApplicationDetailPage() {
     const { id } = useParams()
@@ -12,6 +13,8 @@ export default function ApplicationDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [historyVersion, setHistoryVersion] = useState(0)
+    const [isEditing, setIsEditing] = useState(false)
+    const [detailsMessage, setDetailsMessage] = useState('')
 
     useEffect(
         () => {
@@ -65,6 +68,12 @@ export default function ApplicationDetailPage() {
         setHistoryVersion((version) => version + 1)
     }
 
+    function handleDetailsUpdated(updatedApplication: JobApplication) {
+        setApplication(updatedApplication)
+        setIsEditing(false)
+        setDetailsMessage('Application details updated.')
+    }
+
     if (error) {
         return <p role="alert">{error}</p>
     }
@@ -78,6 +87,29 @@ export default function ApplicationDetailPage() {
             <Link className={styles.backLink} to="/applications">← Back to applications</Link>
             <h1>{application.company}</h1>
             <p>{application.position}</p>
+
+            <button
+                type="button"
+                onClick={() => {
+                    setDetailsMessage('')
+                    setIsEditing((editing) => !editing)
+                }}
+            >
+                {isEditing ? 'Cancel editing' : 'Edit details'}
+            </button>
+            {detailsMessage && (
+                <p role="status" className={styles.successMessage}>
+                    {detailsMessage}
+                </p>
+            )}
+
+            {isEditing && (
+                <EditApplicationForm
+                    application={application}
+                    onDetailsUpdated={handleDetailsUpdated}
+                />
+            )}
+
             <p>Status: {application.status}</p>
             <ApplicationStatusForm
                 currentStatus={application.status}

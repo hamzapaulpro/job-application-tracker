@@ -96,3 +96,31 @@ export async function updateApplicationStatus(id: number, status: ApplicationSta
 
     return response.json()
 }
+
+export async function updateApplicationDetails(id: number, company: string, position: string): Promise<JobApplication> {
+    const response = await fetch(`/api/applications/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ company, position }),
+    })
+
+    if (!response.ok) {
+        if (response.status === 400) {
+            const errorBody = await response.json()
+
+            if (errorBody.code === 'VALIDATION_ERROR') {
+                throw new ApplicationValidationError(errorBody.fieldErrors)
+            }
+        }
+
+        if (response.status === 404) {
+            throw new Error('Application not found')
+        }
+
+        throw new Error('Could not update application details')
+    }
+
+    return response.json()
+}

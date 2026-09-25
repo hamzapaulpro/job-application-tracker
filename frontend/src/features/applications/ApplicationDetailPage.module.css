@@ -19,3 +19,7 @@
     color: var(--color-primary);
     text-underline-offset: 4px;
 }
+
+.details .successMessage {
+    color: #166534;
+}
