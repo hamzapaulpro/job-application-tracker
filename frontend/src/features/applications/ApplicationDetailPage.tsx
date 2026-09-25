@@ -4,12 +4,14 @@ import type {JobApplication} from './types'
 import { getApplication } from './api'
 import styles from './ApplicationDetailPage.module.css'
 import StatusHistory from './StatusHistory'
+import ApplicationStatusForm from './ApplicationStatusForm'
 
 export default function ApplicationDetailPage() {
     const { id } = useParams()
     const [application, setApplication] = useState<JobApplication | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [historyVersion, setHistoryVersion] = useState(0)
 
     useEffect(
         () => {
@@ -58,6 +60,11 @@ export default function ApplicationDetailPage() {
         return <p role="status">Loading application…</p>
     }
 
+    function handleStatusUpdated(updatedApplication: JobApplication) {
+        setApplication(updatedApplication)
+        setHistoryVersion((version) => version + 1)
+    }
+
     if (error) {
         return <p role="alert">{error}</p>
     }
@@ -72,7 +79,15 @@ export default function ApplicationDetailPage() {
             <h1>{application.company}</h1>
             <p>{application.position}</p>
             <p>Status: {application.status}</p>
-            <StatusHistory applicationId={String(application.id)} />
+            <ApplicationStatusForm
+                currentStatus={application.status}
+                applicationId={application.id}
+                onStatusUpdated={handleStatusUpdated}
+            />
+            <StatusHistory
+                key={`${application.id}-${historyVersion}`}
+                applicationId={String(application.id)}
+            />
         </section>
     )
 }

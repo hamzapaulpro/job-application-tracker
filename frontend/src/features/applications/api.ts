@@ -1,4 +1,5 @@
-import type {ApplicationStatusHistory, JobApplication, ValidationErrorResponse} from './types'
+import type {ApplicationStatusHistory, JobApplication,
+    ValidationErrorResponse, ApplicationStatus} from './types'
 
 export class ApplicationValidationError extends Error {
     fieldErrors: ValidationErrorResponse['fieldErrors']
@@ -75,4 +76,23 @@ export async function getApplicationHistory(id: string): Promise<ApplicationStat
     }
 
     return response.json();
+}
+
+export async function updateApplicationStatus(id: number, status: ApplicationStatus): Promise<JobApplication> {
+    const response = await fetch(
+        `/api/applications/${id}/status`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status })
+        }
+    )
+
+    if (!response.ok) {
+        throw new Error('Could not update application status')
+    }
+
+    return response.json()
 }

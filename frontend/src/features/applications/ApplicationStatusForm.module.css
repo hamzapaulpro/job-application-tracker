@@ -1,0 +1,53 @@
+.statusForm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-block: 24px;
+}
+
+.statusForm .successMessage {
+    margin: 0;
+    color: #166534;
+}
+
+.statusForm label {
+    font-weight: 600;
+}
+
+.statusForm select {
+    width: 100%;
+    max-width: 320px;
+    padding: 12px;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    background-color: white;
+    color: #172033;
+    font: inherit;
+}
+
+.updateButton {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--color-primary);
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.updateButton:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.updateButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.updateButton:focus-visible,
+.statusForm select:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
