@@ -61,3 +61,90 @@
     background-color: #f0fdf4;
     color: #166534;
 }
+
+.searchField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-block: 24px;
+    max-width: 420px;
+}
+
+.searchField label {
+    font-weight: 600;
+}
+
+.searchField input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.searchField input:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-block: 24px;
+}
+
+.statusFilter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-block: 24px;
+    max-width: 420px;
+}
+
+.statusFilter label {
+    font-weight: 600;
+}
+
+.statusFilter select {
+    padding: 12px;
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
+    background-color: white;
+    font: inherit;
+}
+
+.statusFilter select:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+.clearButton {
+    padding: 8px 14px;
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
+    background-color: white;
+    color: #172033;
+    font: inherit;
+    cursor: pointer;
+}
+
+.clearButton:hover:not(:disabled) {
+    background-color: #f5f7fb;
+}
+
+.clearButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.clearButton:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}

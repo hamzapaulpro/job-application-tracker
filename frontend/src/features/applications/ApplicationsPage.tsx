@@ -1,7 +1,7 @@
 import styles from "./ApplicationsPage.module.css"
 import { useEffect, useState } from 'react'
 import ApplicationForm from "./ApplicationForm.tsx";
-import type { JobApplication } from './types'
+import type { ApplicationStatus, JobApplication } from './types'
 import { getApplications } from './api'
 import ApplicationCard from './ApplicationCard'
 
@@ -12,6 +12,8 @@ export default function ApplicationsPage() {
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState('')
     const [successMessage, setSuccessMessage] = useState('')
+    const [searchTerm, setSearchTerm] = useState('')
+    const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'ALL'>('ALL')
 
     useEffect(
         () => {
@@ -57,6 +59,19 @@ export default function ApplicationsPage() {
         setShowForm((currentlyOpen) => !currentlyOpen)
     }
 
+    const query = searchTerm.trim().toLowerCase()
+    const filteredApplications = applications.filter(
+        (application) => {
+        const matchesSearch =
+            application.company.toLowerCase().includes(query) ||
+            application.position.toLowerCase().includes(query)
+
+        const matchesStatus = statusFilter === 'ALL' ||
+            application.status === statusFilter
+
+        return matchesSearch && matchesStatus
+    })
+
     return (
         <>
             <header id="applications" className={styles.pageHeader}>
@@ -80,6 +95,52 @@ export default function ApplicationsPage() {
                     {successMessage}
                 </p>
             )}
+
+            <div className={styles.filters}>
+                <div className={styles.searchField}>
+                    <label htmlFor="application-search">Search applications</label>
+                    <input
+                        id="application-search"
+                        type="search"
+                        placeholder="Company or position"
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                    />
+                </div>
+
+                <div className={styles.statusFilter}>
+                    <label htmlFor="status-filter">Filter by status</label>
+
+                    <select
+                        id="status-filter"
+                        value={statusFilter}
+                        onChange={(event) =>
+                            setStatusFilter(event.target.value as ApplicationStatus | 'ALL')
+                        }
+                    >
+                        <option value="ALL">All statuses</option>
+                        <option value="APPLIED">Applied</option>
+                        <option value="SCREENING">Screening</option>
+                        <option value="INTERVIEW">Interview</option>
+                        <option value="OFFER">Offer</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="WITHDRAWN">Withdrawn</option>
+                    </select>
+                </div>
+
+                <button
+                    className={styles.clearButton}
+                    type="button"
+                    onClick={() => {
+                        setSearchTerm('')
+                        setStatusFilter('ALL')
+                    }}
+                    disabled={searchTerm === '' && statusFilter === 'ALL'}
+                >
+                    Clear filters
+                </button>
+            </div>
+
             {showForm && <ApplicationForm onApplicationCreated={handleApplicationCreated} />}
             {loading && <p role="status">Loading applications…</p>}
 
@@ -87,20 +148,25 @@ export default function ApplicationsPage() {
 
             {!loading && !loadError && (
                 <section>
-                    <h2>Your applications ({applications.length})</h2>
+                    <h2>
+                        Your applications ({filteredApplications.length} of {applications.length})
+                    </h2>
 
-                    {applications.length === 0 ? (
-                        <p>No applications yet. Add your first one above.</p>
-                    ) : (
-                        <ul className={styles.applicationList}>
-                            {applications.map((application) => (
-                                <ApplicationCard
-                                    key={application.id}
-                                    application={application}
-                                />
-                            ))}
-                        </ul>
-                    )}
+                    {
+                        applications.length === 0 ?
+                            (<p>No applications yet. Add your first one above.</p>)
+                            : filteredApplications.length === 0 ?
+                                (<p>No applications match your search and status filter.</p>)
+                                : (<ul className={styles.applicationList}>
+                                    {
+                                        filteredApplications.map((application) => (
+                                        <ApplicationCard
+                                            key={application.id}
+                                            application={application}
+                                        />))
+                                    }
+                                    </ul>)
+                    }
                 </section>
             )}
         </>
