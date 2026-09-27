@@ -73,7 +73,7 @@ export default function ApplicationsPage() {
     })
 
     return (
-        <>
+        <div className={styles.page}>
             <header id="applications" className={styles.pageHeader}>
                 <div>
                     <h1 className={styles.title}>Applications</h1>
@@ -169,6 +169,6 @@ export default function ApplicationsPage() {
                     }
                 </section>
             )}
-        </>
+        </div>
     )
 }

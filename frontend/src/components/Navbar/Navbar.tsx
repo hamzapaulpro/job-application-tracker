@@ -15,7 +15,16 @@ export default function Navbar() {
                 >
                     Applications
                 </NavLink>
-                <a href="#about">About</a>
+
+                <NavLink
+                    to="/cv"
+                    className={
+                        ({isActive}) => (isActive ? styles.activeLink : undefined )
+                    }
+                >
+                    Create CV
+                </NavLink>
+                <a href="/about">About</a>
             </div>
         </nav>
     )
