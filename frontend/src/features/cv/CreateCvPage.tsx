@@ -1,5 +1,5 @@
 import styles from './CreateCvPage.module.css'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type {
     PersonalDetails,
     EducationEntry,
@@ -8,6 +8,9 @@ import type {
     LanguageEntry,
     LanguageLevel
 } from './types'
+import { BlobProvider } from '@react-pdf/renderer'
+import CvPreview from './CvPreview'
+import CvDocument from './CvDocument'
 
 function hasEducationContent(entry: EducationEntry) {
     return [
@@ -15,6 +18,7 @@ function hasEducationContent(entry: EducationEntry) {
         entry.degree,
         entry.startDate,
         entry.endDate,
+        entry.description
     ].some((value) => value.trim() !== '')
 }
 
@@ -107,10 +111,13 @@ export default function CreateCvPage() {
 
             if (saved) {
                 const parsed: unknown = JSON.parse(saved)
-                if (Array.isArray(parsed) &&
+
+                if (
+                    Array.isArray(parsed) &&
                     parsed.every(
                         (entry) =>
-                            typeof entry === 'object' && entry !== null &&
+                            typeof entry === 'object' &&
+                            entry !== null &&
                             typeof entry.id === 'string' &&
                             typeof entry.institution === 'string' &&
                             typeof entry.degree === 'string' &&
@@ -118,17 +125,29 @@ export default function CreateCvPage() {
                             typeof entry.endDate === 'string'
                     )
                 ) {
-                    const entries = parsed.filter(hasEducationContent)
+                    const entries: EducationEntry[] = parsed
+                        .map((entry) => ({
+                            id: entry.id,
+                            institution: entry.institution,
+                            degree: entry.degree,
+                            startDate: entry.startDate,
+                            endDate: entry.endDate,
+                            description:
+                                typeof entry.description === 'string'
+                                    ? entry.description
+                                    : '',
+                        }))
+                        .filter(hasEducationContent)
 
                     if (entries.length > 0) {
                         return entries
                     }
                 }
             }
-
         } catch {
             // Use an empty entry if saved data cannot be read.
         }
+
         return [
             {
                 id: crypto.randomUUID(),
@@ -136,10 +155,10 @@ export default function CreateCvPage() {
                 degree: '',
                 startDate: '',
                 endDate: '',
+                description: '',
             },
         ]
     })
-
     const [experience, setExperience] = useState<ExperienceEntry[]>(() => {
         try {
             const saved = localStorage.getItem('jobtracker.cv.experience')
@@ -183,7 +202,6 @@ export default function CreateCvPage() {
             },
         ]
     })
-
     const [projects, setProjects] = useState<ProjectEntry[]>(() => {
         try {
             const saved = localStorage.getItem('jobtracker.cv.projects')
@@ -225,7 +243,6 @@ export default function CreateCvPage() {
             },
         ]
     })
-
     const [skills, setSkills] = useState(() => {
         try {
             return localStorage.getItem('jobtracker.cv.skills') ?? ''
@@ -233,6 +250,78 @@ export default function CreateCvPage() {
             return ''
         }
     })
+    const [languages, setLanguages] = useState<LanguageEntry[]>(() => {
+        try {
+            const saved = localStorage.getItem('jobtracker.cv.languages')
+
+            if (saved) {
+                const parsed: unknown = JSON.parse(saved)
+
+                if (
+                    Array.isArray(parsed) &&
+                    parsed.every(
+                        (entry) =>
+                            typeof entry === 'object' &&
+                            entry !== null &&
+                            typeof entry.id === 'string' &&
+                            typeof entry.name === 'string' &&
+                            typeof entry.level === 'string' &&
+                            isLanguageLevel(entry.level)
+                    )
+                ) {
+                    const entries = parsed.filter(hasLanguageContent)
+
+                    if (entries.length > 0) {
+                        return entries
+                    }
+                }
+            }
+        } catch {
+            // Use an empty entry if saved data cannot be read.
+        }
+
+        return [
+            {
+                id: crypto.randomUUID(),
+                name: '',
+                level: '',
+            },
+        ]
+    })
+    const cvData = useMemo(
+        () => ({
+            personalDetails,
+            summary,
+            education,
+            experience,
+            projects,
+            skills,
+            languages,
+        }),
+        [
+            personalDetails,
+            summary,
+            education,
+            experience,
+            projects,
+            skills,
+            languages,
+        ],
+    )
+    const [previewData, setPreviewData] = useState(cvData)
+    const previewDocument = useMemo(
+        () => <CvDocument {...previewData} />,
+        [previewData],
+    )
+
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            setPreviewData(cvData)
+        }, 500)
+
+        return () => window.clearTimeout(timeoutId)
+    }, [cvData])
+
 
     function updatePersonalDetails(field: keyof PersonalDetails, value: string) {
         const updated = {...personalDetails, [field]: value}
@@ -249,7 +338,6 @@ export default function CreateCvPage() {
             setSaveError('Your changes could not be saved in this browser.')
         }
     }
-
     function updateSummary(value: string) {
         setSummary(value)
 
@@ -260,7 +348,6 @@ export default function CreateCvPage() {
             setSaveError('Your changes could not be saved in this browser.')
         }
     }
-
     function updateEducation(id: string, field: keyof Omit<EducationEntry, 'id'>, value: string) {
         const updated = education.map((entry) =>
             entry.id === id
@@ -277,7 +364,6 @@ export default function CreateCvPage() {
             setSaveError('Your changes could not be saved in this browser.')
         }
     }
-
     function addEducation() {
         const updated = [
             ...education,
@@ -287,6 +373,7 @@ export default function CreateCvPage() {
                 degree: '',
                 startDate: '',
                 endDate: '',
+                description: '',
             },
         ]
 
@@ -302,7 +389,6 @@ export default function CreateCvPage() {
             setSaveError('Your changes could not be saved in this browser.')
         }
     }
-
     function removeEducation(id: string) {
         const updated = education.filter((entry) => entry.id !== id)
 
@@ -427,45 +513,6 @@ export default function CreateCvPage() {
             setSaveError('Your changes could not be saved in this browser.')
         }
     }
-
-    const [languages, setLanguages] = useState<LanguageEntry[]>(() => {
-        try {
-            const saved = localStorage.getItem('jobtracker.cv.languages')
-
-            if (saved) {
-                const parsed: unknown = JSON.parse(saved)
-
-                if (
-                    Array.isArray(parsed) &&
-                    parsed.every(
-                        (entry) =>
-                            typeof entry === 'object' &&
-                            entry !== null &&
-                            typeof entry.id === 'string' &&
-                            typeof entry.name === 'string' &&
-                            typeof entry.level === 'string' &&
-                            isLanguageLevel(entry.level)
-                    )
-                ) {
-                    const entries = parsed.filter(hasLanguageContent)
-
-                    if (entries.length > 0) {
-                        return entries
-                    }
-                }
-            }
-        } catch {
-            // Use an empty entry if saved data cannot be read.
-        }
-
-        return [
-            {
-                id: crypto.randomUUID(),
-                name: '',
-                level: '',
-            },
-        ]
-    })
 
     function updateLanguage(id: string, changes: Partial<Omit<LanguageEntry, 'id'>>) {
         const updated = languages.map((entry) =>
@@ -856,6 +903,29 @@ export default function CreateCvPage() {
                                 </span>
                                     </div>
                                 </div>
+
+                                <div className={`${styles.field} ${styles.descriptionField}`}>
+                                    <label htmlFor={`education-description-${entry.id}`}>
+                                        Description (optional)
+                                    </label>
+                                    <textarea
+                                        id={`education-description-${entry.id}`}
+                                        name="educationDescription"
+                                        rows={4}
+                                        placeholder="Add relevant coursework, achievements, or your thesis."
+                                        value={entry.description}
+                                        onChange={(event) =>
+                                            updateEducation(entry.id, 'description', event.target.value)
+                                        }
+                                        aria-describedby={`education-description-hint-${entry.id}`}
+                                    />
+                                    <span
+                                        id={`education-description-hint-${entry.id}`}
+                                        className={styles.fieldHint}
+                                    >
+        Write one point per line.
+    </span>
+                                </div>
                             </div>
 
                         ))}
@@ -1238,34 +1308,64 @@ export default function CreateCvPage() {
                 </div>
 
                 <aside className={styles.previewPanel} aria-labelledby="preview-heading">
-                    <div className={styles.previewHeader}>
-                        <h2 id="preview-heading" className={styles.sectionTitle}>
-                            CV preview
-                        </h2>
+                    <BlobProvider document={previewDocument}>
+                        {({ url, loading, error }) => {
+                            const isUpdating = cvData !== previewData || loading
+                            const canDownload = Boolean(url) && !isUpdating && !error
 
-                        <div className={styles.previewActions}>
-                            <button
-                                type="button"
-                                className={styles.secondaryButton}
+                            function downloadPdf() {
+                                if (!url || !canDownload) return
 
-                            >
-                                Refresh preview
-                            </button>
+                                const link = document.createElement('a')
+                                link.href = url
+                                link.download = 'CV.pdf'
 
-                            <button
-                                type="button"
-                                className={styles.primaryButton}
+                                document.body.appendChild(link)
+                                link.click()
+                                link.remove()
+                            }
 
-                            >
-                                Download PDF
-                            </button>
-                        </div>
-                    </div>
+                            return (
+                                <>
+                                    <div className={styles.previewHeader}>
+                                        <h2
+                                            id="preview-heading"
+                                            className={styles.sectionTitle}
+                                        >
+                                            CV preview
+                                        </h2>
 
+                                        <div className={styles.previewActions}>
+                                            <button
+                                                type="button"
+                                                className={styles.primaryButton}
+                                                disabled={!canDownload}
+                                                onClick={downloadPdf}
+                                            >
+                                                Download PDF
+                                            </button>
+                                        </div>
+                                    </div>
 
-                    <div className={styles.previewPlaceholder}>
-                        <p>Your CV preview will appear here.</p>
-                    </div>
+                                    {error ? (
+                                        <p role="alert">
+                                            The CV could not be generated.
+                                        </p>
+                                    ) : (
+                                        <>
+                                            {(isUpdating || !url) && (
+                                                <p role="status">Updating preview…</p>
+                                            )}
+
+                                            {!loading && url && (
+                                                <CvPreview url={url} />
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )
+                        }}
+                    </BlobProvider>
                 </aside>
             </div>
         </div>
