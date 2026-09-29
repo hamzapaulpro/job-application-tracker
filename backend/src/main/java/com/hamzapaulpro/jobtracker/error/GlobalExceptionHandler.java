@@ -1,6 +1,7 @@
 package com.hamzapaulpro.jobtracker.error;
 
 import com.hamzapaulpro.jobtracker.application.exception.ApplicationNotFoundException;
+import com.hamzapaulpro.jobtracker.coverletter.exception.CoverLetterGenerationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,5 +36,16 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse handleApplicationNotFound(ApplicationNotFoundException exception) {
         return new ApiErrorResponse("APPLICATION_NOT_FOUND", exception.getMessage());
+    }
+
+    @ExceptionHandler(CoverLetterGenerationException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ApiErrorResponse handleCoverLetterGeneration(
+            CoverLetterGenerationException exception
+    ) {
+        return new ApiErrorResponse(
+                "COVER_LETTER_GENERATION_FAILED",
+                exception.getMessage()
+        );
     }
 }
