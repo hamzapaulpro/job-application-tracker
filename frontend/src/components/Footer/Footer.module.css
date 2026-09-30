@@ -1,17 +1,35 @@
 .footer {
-    border-top: 1px solid #dce3ee;
-    background-color: #f5f7fb;
-    padding: 24px;
+    border-top: 1px solid #e3e2dc;
+    background-color: #f7f5f0;
+    padding: 1.5rem 2rem;
     text-align: center;
-    color: #526078;
+    color: #59645d;
     font-size: 0.875rem;
+    line-height: 1.6;
 }
 
 .footer p {
-    margin: 0 0 12px;
+    margin: 0 0 0.75rem;
 }
 
 .footer a {
-    color: #1d4ed8;
+    color: #174b38;
     text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+}
+
+.footer a:hover {
+    text-decoration-thickness: 2px;
+}
+
+.footer a:focus-visible {
+    outline: 3px solid #174b38;
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+@media (max-width: 600px) {
+    .footer {
+        padding: 1.25rem 1rem;
+    }
 }
