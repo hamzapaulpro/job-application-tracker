@@ -24,6 +24,14 @@ export default function Navbar() {
                 >
                     Create CV
                 </NavLink>
+                <NavLink
+                    to="/cover-letter/new"
+                    className={
+                        ({isActive}) => (isActive ? styles.activeLink : undefined )
+                    }
+                >
+                    Cover Letter
+                </NavLink>
                 <a href="/about">About</a>
             </div>
         </nav>

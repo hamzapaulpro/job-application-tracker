@@ -7,6 +7,7 @@ import ApplicationDetailPage from "./features/applications/ApplicationDetailPage
 import NotFoundPage from './pages/NotFoundPage'
 import AboutPage from "./pages/AboutPage.tsx";
 import CreateCvPage from "./features/cv/CreateCvPage.tsx";
+import CreateCoverLetterPage from "./features/coverletter/CreateCoverLetterPage.tsx";
 
 function App() {
     const isCvPage = useLocation().pathname === '/cv'
@@ -45,6 +46,10 @@ function App() {
                   <Route
                       path="/about"
                       element={<AboutPage />}
+                  />
+                  <Route
+                      path="/cover-letter/new"
+                      element={<CreateCoverLetterPage />}
                   />
               </Routes>
           </main>
