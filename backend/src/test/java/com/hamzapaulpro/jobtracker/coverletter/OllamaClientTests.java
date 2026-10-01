@@ -4,7 +4,6 @@ import com.hamzapaulpro.jobtracker.ai.exception.AiGenerationException;
 import com.hamzapaulpro.jobtracker.ai.ollama.OllamaClient;
 import com.hamzapaulpro.jobtracker.ai.ollama.OllamaProperties;
 import com.hamzapaulpro.jobtracker.ai.dto.AiMessage;
-import com.hamzapaulpro.jobtracker.coverletter.exception.CoverLetterGenerationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -58,7 +56,7 @@ public class OllamaClientTests {
 
         String result = client.generate(List.of(
                 new AiMessage("user", "Write a short cover letter.")
-        ), isNull());
+        ), null);
 
         assertThat(result).isEqualTo("Dear Hiring Team, welcome.");
         server.verify();
@@ -86,7 +84,7 @@ public class OllamaClientTests {
 
         assertThatThrownBy(() -> client.generate(List.of(
                 new AiMessage("user", "Write a cover letter.")
-        ), isNull()))
+        ), null))
                 .isInstanceOf(AiGenerationException.class)
                 .hasMessage("Cover letter generation failed. Please try again.")
                 .hasCauseInstanceOf(
@@ -125,7 +123,7 @@ public class OllamaClientTests {
 
         assertThatThrownBy(() -> client.generate(List.of(
                 new AiMessage("user", "Write a cover letter.")
-        ), isNull()))
+        ), null))
                 .isInstanceOf(AiGenerationException.class)
                 .hasMessage(
                         "The AI service returned an empty response. Please try again."
