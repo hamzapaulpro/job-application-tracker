@@ -3,10 +3,7 @@ package com.hamzapaulpro.jobtracker.coverletter;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CoverLetterResponse;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CreateCoverLetterRequest;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cover-letters")
@@ -19,7 +16,9 @@ public class CoverLetterController {
     }
 
     @PostMapping
-    public CoverLetterResponse generate(@Valid @RequestBody CreateCoverLetterRequest request) {
-        return service.generate(request);
+    public CoverLetterResponse generate(
+            @Valid @RequestBody CreateCoverLetterRequest request,
+            @RequestHeader(name = "X-OpenAI-Api-Key", required = false) String apiKey) {
+        return service.generate(request, apiKey);
     }
 }

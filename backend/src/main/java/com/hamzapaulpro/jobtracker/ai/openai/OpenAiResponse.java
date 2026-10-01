@@ -1,0 +1,26 @@
+package com.hamzapaulpro.jobtracker.ai.openai;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record OpenAiResponse(
+        String status,
+        List<OutputItem> output
+) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record OutputItem(
+            String type,
+            List<ContentItem> content
+    ) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record ContentItem(
+            String type,
+            String text,
+            String refusal
+    ) {
+    }
+}

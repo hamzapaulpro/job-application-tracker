@@ -1,5 +1,6 @@
 package com.hamzapaulpro.jobtracker.error;
 
+import com.hamzapaulpro.jobtracker.ai.exception.AiGenerationException;
 import com.hamzapaulpro.jobtracker.application.exception.ApplicationNotFoundException;
 import com.hamzapaulpro.jobtracker.coverletter.exception.CoverLetterGenerationException;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,15 @@ public class GlobalExceptionHandler {
     ) {
         return new ApiErrorResponse(
                 "COVER_LETTER_GENERATION_FAILED",
+                exception.getMessage()
+        );
+    }
+
+    @ExceptionHandler(AiGenerationException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ApiErrorResponse handleAiGeneration(AiGenerationException exception) {
+        return new ApiErrorResponse(
+                "AI_GENERATION_FAILED",
                 exception.getMessage()
         );
     }

@@ -1,5 +1,6 @@
 package com.hamzapaulpro.jobtracker.coverletter;
 
+import com.hamzapaulpro.jobtracker.ai.dto.AiProvider;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CoverLetterResponse;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CreateCoverLetterRequest;
 import com.hamzapaulpro.jobtracker.coverletter.exception.CoverLetterGenerationException;
@@ -34,7 +35,8 @@ public class CoverLetterControllerTests {
                             {
                                 "cvText": "",
                                 "jobDescription": "Working student Java developer.",
-                                "language": "ENGLISH"
+                                "language": "ENGLISH",
+                                "provider": "OLLAMA"
                             }
                         """)
                 )
@@ -52,11 +54,12 @@ public class CoverLetterControllerTests {
                 "Student with Java skills.",
                 "Working student Java developer.",
                 "ENGLISH",
-                "Focus on my Java project."
+                "Focus on my Java project.",
+                AiProvider.OLLAMA
         );
 
         String letter = "Dear Hiring Team,\n\nI am applying for the role.";
-        when(service.generate(request))
+        when(service.generate(request, null))
                 .thenReturn(new CoverLetterResponse(letter));
 
         mockMvc.perform
@@ -68,13 +71,14 @@ public class CoverLetterControllerTests {
                                 "cvText": "Student with Java skills.",
                                 "jobDescription": "Working student Java developer.",
                                 "language": "ENGLISH",
-                                "instructions": "Focus on my Java project."
+                                "instructions": "Focus on my Java project.",
+                                "provider": "OLLAMA"
                             }
                             """)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value(letter));
-        verify(service).generate(request);
+        verify(service).generate(request, null);
     }
 
     @Test
@@ -83,10 +87,11 @@ public class CoverLetterControllerTests {
                 "Student with Java skills.",
                 "Working student Java developer.",
                 "ENGLISH",
-                null
+                null,
+                AiProvider.OLLAMA
         );
 
-        when(service.generate(request))
+        when(service.generate(request, null))
                 .thenThrow(new CoverLetterGenerationException(
                         "Cover letter generation failed. Please try again."
                 ));
@@ -97,7 +102,8 @@ public class CoverLetterControllerTests {
                             {
                                 "cvText": "Student with Java skills.",
                                 "jobDescription": "Working student Java developer.",
-                                "language": "ENGLISH"
+                                "language": "ENGLISH",
+                                "provider": "OLLAMA"
                             }
                             """))
                 .andExpect(status().isBadGateway())
@@ -106,6 +112,42 @@ public class CoverLetterControllerTests {
                 .andExpect(jsonPath("$.message")
                         .value("Cover letter generation failed. Please try again."));
 
-        verify(service).generate(request);
+        verify(service).generate(request, null);
+    }
+
+    @Test
+    void passesApiKeyHeaderToService() throws Exception {
+        CreateCoverLetterRequest expectedRequest =
+                new CreateCoverLetterRequest(
+                        "My CV",
+                        "Job description",
+                        "ENGLISH",
+                        "Keep it concise",
+                        AiProvider.OPENAI
+                );
+
+        String apiKey = "test-key-not-real";
+
+        when(service.generate(expectedRequest, apiKey))
+                .thenReturn(new CoverLetterResponse("Generated cover letter"));
+
+        mockMvc.perform(post("/api/cover-letters")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-OpenAI-Api-Key", apiKey)
+                        .content("""
+                            {
+                                "cvText": "My CV",
+                                "jobDescription": "Job description",
+                                "language": "ENGLISH",
+                                "instructions": "Keep it concise",
+                                "provider": "OPENAI"
+                            }
+                            """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content")
+                        .value("Generated cover letter"));
+
+        verify(service).generate(expectedRequest, apiKey);
+
     }
 }

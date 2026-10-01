@@ -1,8 +1,10 @@
 package com.hamzapaulpro.jobtracker.coverletter;
 
+import com.hamzapaulpro.jobtracker.ai.AiClient;
+import com.hamzapaulpro.jobtracker.ai.AiClientRegistry;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CoverLetterResponse;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CreateCoverLetterRequest;
-import com.hamzapaulpro.jobtracker.coverletter.dto.OllamaMessage;
+import com.hamzapaulpro.jobtracker.ai.dto.AiMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,13 +12,14 @@ import java.util.List;
 @Service
 public class CoverLetterService {
 
-    private final OllamaClient ollamaClient;
+    private final AiClientRegistry aiClientRegistry;
 
-    public CoverLetterService(OllamaClient ollamaClient) {
-        this.ollamaClient = ollamaClient;
+    public CoverLetterService(AiClientRegistry aiClientRegistry) {
+        this.aiClientRegistry = aiClientRegistry;
     }
 
-    public CoverLetterResponse generate(CreateCoverLetterRequest request) {
+    public CoverLetterResponse generate(
+            CreateCoverLetterRequest request, String apiKey) {
         String instructions = request.instructions() == null ? ""
                 : request.instructions().trim();
 
@@ -66,10 +69,11 @@ public class CoverLetterService {
                 instructions
         );
 
-        String content = ollamaClient.generate(List.of(
-                new OllamaMessage("system", systemPrompt),
-                new OllamaMessage("user", userPrompt)
-        ));
+        AiClient client = aiClientRegistry.getClient(request.provider());
+        String content = client.generate(List.of(
+                new AiMessage("system", systemPrompt),
+                new AiMessage("user", userPrompt)
+        ), apiKey);
 
         return new CoverLetterResponse(content);
     }

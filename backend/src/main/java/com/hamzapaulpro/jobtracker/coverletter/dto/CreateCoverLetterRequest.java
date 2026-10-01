@@ -1,6 +1,8 @@
 package com.hamzapaulpro.jobtracker.coverletter.dto;
 
+import com.hamzapaulpro.jobtracker.ai.dto.AiProvider;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -21,6 +23,9 @@ public record CreateCoverLetterRequest(
         String language,
 
         @Size(max = 1000, message = "Instructions must be at most 1000 characters")
-        String instructions
+        String instructions,
+
+        @NotNull
+        AiProvider provider
 ) {
 }

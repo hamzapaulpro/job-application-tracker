@@ -1,9 +1,9 @@
-package com.hamzapaulpro.jobtracker.coverletter;
+package com.hamzapaulpro.jobtracker.ai.ollama;
 
-import com.hamzapaulpro.jobtracker.coverletter.dto.OllamaChatRequest;
-import com.hamzapaulpro.jobtracker.coverletter.dto.OllamaChatResponse;
-import com.hamzapaulpro.jobtracker.coverletter.dto.OllamaMessage;
-import com.hamzapaulpro.jobtracker.coverletter.exception.CoverLetterGenerationException;
+import com.hamzapaulpro.jobtracker.ai.AiClient;
+import com.hamzapaulpro.jobtracker.ai.dto.AiProvider;
+import com.hamzapaulpro.jobtracker.ai.dto.AiMessage;
+import com.hamzapaulpro.jobtracker.ai.exception.AiGenerationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 import java.util.List;
 
 @Component
-public class OllamaClient {
+public class OllamaClient implements AiClient {
 
     private final RestClient restClient;
     private final OllamaProperties properties;
@@ -25,7 +25,8 @@ public class OllamaClient {
         this.properties = properties;
     }
 
-    public String generate(List<OllamaMessage> messages) {
+    @Override
+    public String generate(List<AiMessage> messages, String apiKey) {
         var request = new OllamaChatRequest(
                 properties.model(),
                 messages,
@@ -43,7 +44,7 @@ public class OllamaClient {
                     .retrieve()
                     .body(OllamaChatResponse.class);
         } catch (RestClientException exception) {
-            throw new CoverLetterGenerationException(
+            throw new AiGenerationException(
                     "Cover letter generation failed. Please try again.",
                     exception
             );
@@ -53,11 +54,16 @@ public class OllamaClient {
                 || response.message() == null
                 || response.message().content() == null
                 || response.message().content().isBlank()) {
-            throw new CoverLetterGenerationException(
+            throw new AiGenerationException(
                     "The AI service returned an empty response. Please try again."
             );
         }
 
         return response.message().content().trim();
+    }
+
+    @Override
+    public AiProvider provider() {
+        return AiProvider.OLLAMA;
     }
 }

@@ -1,4 +1,4 @@
-package com.hamzapaulpro.jobtracker.coverletter;
+package com.hamzapaulpro.jobtracker.ai.ollama;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,10 @@
 package com.hamzapaulpro.jobtracker.coverletter;
 
+import com.hamzapaulpro.jobtracker.ai.AiClient;
+import com.hamzapaulpro.jobtracker.ai.AiClientRegistry;
+import com.hamzapaulpro.jobtracker.ai.dto.AiProvider;
 import com.hamzapaulpro.jobtracker.coverletter.dto.CreateCoverLetterRequest;
-import com.hamzapaulpro.jobtracker.coverletter.dto.OllamaMessage;
+import com.hamzapaulpro.jobtracker.ai.dto.AiMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -13,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,13 +24,16 @@ import static org.mockito.Mockito.when;
 public class CoverLetterServiceTests {
 
     @Mock
-    private OllamaClient ollamaClient;
+    private AiClientRegistry aiClientRegistry;
+
+    @Mock
+    private AiClient aiClient;
 
     @InjectMocks
     private CoverLetterService service;
 
     @Captor
-    private ArgumentCaptor<List<OllamaMessage>> messagesCaptor;
+    private ArgumentCaptor<List<AiMessage>> messagesCaptor;
 
     @Test
     void includesApplicantInformationAndReturnsGeneratedContent() {
@@ -35,16 +41,20 @@ public class CoverLetterServiceTests {
                 "Student with Java skills.",
                 "Working student Java developer.",
                 "ENGLISH",
-                "Mention that I can work 15 hours per week."
+                "Mention that I can work 15 hours per week.",
+                AiProvider.OLLAMA
         );
 
-        when(ollamaClient.generate(anyList()))
+        when(aiClientRegistry.getClient(AiProvider.OLLAMA))
+                .thenReturn(aiClient);
+
+        when(aiClient.generate(anyList(), isNull()))
                 .thenReturn("Generated cover letter.");
 
-        var response = service.generate(request);
-        verify(ollamaClient).generate(messagesCaptor.capture());
+        var response = service.generate(request, null);
+        verify(aiClient).generate(messagesCaptor.capture(), isNull());
 
-        List<OllamaMessage> messages = messagesCaptor.getValue();
+        List<AiMessage> messages = messagesCaptor.getValue();
 
         assertThat(messages).hasSize(2);
         assertThat(messages.get(0).role()).isEqualTo("system");
@@ -67,15 +77,19 @@ public class CoverLetterServiceTests {
                 "Student with Java skills.",
                 "Working student Java developer.",
                 "ENGLISH",
-                null
+                null,
+                AiProvider.OLLAMA
         );
 
-        when(ollamaClient.generate(anyList()))
+        when(aiClientRegistry.getClient(AiProvider.OLLAMA))
+                .thenReturn(aiClient);
+
+        when(aiClient.generate(anyList(), isNull()))
                 .thenReturn("Generated cover letter.");
 
-        var response = service.generate(request);
+        var response = service.generate(request, null);
 
-        verify(ollamaClient).generate(messagesCaptor.capture());
+        verify(aiClient).generate(messagesCaptor.capture(), isNull());
 
         String userPrompt = messagesCaptor.getValue().get(1).content();
 
@@ -85,5 +99,29 @@ public class CoverLetterServiceTests {
 
         assertThat(response.content())
                 .isEqualTo("Generated cover letter.");
+    }
+
+    @Test
+    void passesApiKeyToOpenAiClient() {
+        CreateCoverLetterRequest request = new CreateCoverLetterRequest(
+                "My CV",
+                "Job description",
+                "ENGLISH",
+                "Keep it concise",
+                AiProvider.OPENAI
+        );
+
+        String apiKey = "test-key-not-real";
+
+        when(aiClientRegistry.getClient(AiProvider.OPENAI))
+                .thenReturn(aiClient);
+
+        when(aiClient.generate(anyList(), eq(apiKey)))
+                .thenReturn("Generated cover letter");
+
+        service.generate(request, apiKey);
+
+        verify(aiClientRegistry).getClient(AiProvider.OPENAI);
+        verify(aiClient).generate(anyList(), eq(apiKey));
     }
 }
